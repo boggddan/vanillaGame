@@ -1,0 +1,148 @@
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  background-color: #060AB2;
+ }
+
+ .main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.memory-game {
+  padding: 5px;
+  align-self: center; // for IE 11 для центрирования
+  flex-shrink: 0; // for IE 11 для бордера
+  margin: auto;
+
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 640px;
+  width: 100%;
+  border: 1px dotted white;
+  perspective: 1000px;
+}
+
+.memory-card {
+  width: calc(25% - 10px);
+  margin: 5px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,.3);
+  position: relative;
+  cursor: pointer;
+
+  transition: transform .5s linear,
+              filter .3s linear .5s;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+    width: 100%;
+  }
+
+  &:active {
+    transform: rotateY(0) scale(0.97);
+    transition: transform .2s linear;
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    cursor: default;
+    filter: grayscale(100%);
+  }
+
+  &.flip {
+    transform: rotateY(180deg) scale(1);
+    cursor: default;
+  }
+}
+
+.front-face,
+.back-face {
+  pointer-events: none; // for IE11 parent:active { }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 15%;
+  border-radius: 5px;
+  background-color: #1C7CCC;
+  transition: visibility 0s linear .25s;
+  overflow: hidden;
+}
+
+
+////////////////////////////////////////////
+  // for IE11 не работае filter: grayscale и
+  // filter: url() не работает анимация,
+  // поэтому создаем оберки вокруг изображений
+  // и анимируем с помощу дубликата изображения
+  // без фильтра, через прозрачность (opacity)
+
+.front-face {
+  .svg-real {
+    opacity: 1;
+    transition: opacity .3s linear .5s;
+  }
+
+  // в Chrome и Opera есть глюк, из-за opacity и transition
+  // тогда .svg-fiter-background (нижний элемент) начинает во время анимации
+  // перекрывать .svg-filter(верхний элемент) . Лечится хаком, что задаем тоже
+  // максимально возмножную прозрачность (opacity), а
+  // отображение уже задаем через visibility
+  .svg-filter {
+    opacity: 0.99999;
+    visibility: hidden;
+    transition: opacity .3s linear .5s,
+                visibility 0s linear .5s;
+  }
+
+  .svg-filter-background {
+    opacity: 0;
+    transition: opacity .3s linear .5s;
+  }
+
+  // filter налаживаем на помков, потому что у IE11 и EDGE не
+  // работает filter если его применить в SVG
+  .svg-filter-background *,
+  .svg-filter * {
+    filter: url('#filter-grayscale-100');
+  }
+}
+
+.memory-card[disabled] .front-face {
+  .svg-real {
+    opacity: 0;
+  }
+
+  .svg-filter {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .svg-filter-background {
+    opacity: 1;
+  }
+}
+////////////////////////////////////////////
+
+// https://toster.ru/q/575749
+// for IE 11 не работает transform-style: preserve-3d;
+// а также неправильно работает в backface-visibility и transition
+.memory-card:not(.flip) .front-face, .memory-card.flip .back-face {
+  visibility: hidden;
+}
