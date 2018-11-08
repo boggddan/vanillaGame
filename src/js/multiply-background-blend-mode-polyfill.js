@@ -1,5 +1,5 @@
 // Запускается в браузерах который не поддерживают свойство background-blend-mode.
-// Полифил применяетс к тегам [data-background-bland-mode="multiply"]
+// Полифил применяетс к тегам [data-background-blend-mode="multiply"]
 // Изображение и цвет берет с CSS свойств (background-image, background-color)
 // IE 11 работает огранниченное количество фильтров: normal, myltiply, lighten, screen, darken
 //   https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/samples/jj206437(v=vs.85)
@@ -39,6 +39,10 @@ if (window.NodeList && !NodeList.prototype.forEach) {
     svg.setAttribute('height', '100%');
     svg.setAttribute('width', '100%');
     svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.bottom = '0';
+    svg.style.right = '0';
     svg.style.overflow = 'hidden';
 
     const defs = svg.appendChild(document.createElementNS(namespaceURI, 'defs'));
@@ -89,12 +93,37 @@ if (window.NodeList && !NodeList.prototype.forEach) {
             el.style.borderTopColor = 'transparent';
             el.style.borderTopStyle = 'solid';
           }
+          const svg = createSVGFilter({ backgroundImage, backgroundColor, backgroundBlendMode });
+          el.prepend(svg);
 
-          el.prepend(createSVGFilter({ backgroundImage, backgroundColor, backgroundBlendMode }));
+          // Если фон для Body, нужно по вешать обработчик события на измнения размеров окна
+          // потому что размер body может быть меньша размера документа, когда часть контента
+          // выпадает
+          if (el.tagName.toLowerCase() === 'body') {
+	          let running = false;
+            let windowHeight = 0;
+
+            const update = () => {
+              if (windowHeight !== window.innerHeight) {
+                windowHeight = window.innerHeight;
+                svg.style.height = 'auto';
+                svg.style.height = `${document.documentElement.scrollHeight}px`;
+              }
+              running = false;
+            }
+
+            const requestTick = () => {
+              if(!running) requestAnimationFrame(update);
+              running = true;
+            }
+
+            window.addEventListener('resize', requestTick);
+          }
         }
       });
     }
   };
 
-  if (isNotSupport) window.addEventListener('load', applyFilter);
+  // if (isNotSupport)
+  window.addEventListener('load', applyFilter);
 })();
