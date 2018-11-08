@@ -32,26 +32,26 @@ if (window.NodeList && !NodeList.prototype.forEach) {
 }
 
 if (!('remove' in Element.prototype)) {
-  Element.prototype.remove = function () {
+  Element.prototype.remove = function() {
     if (this.parentNode) this.parentNode.removeChild(this);
   };
 }
 
-if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLElement) {
-  const classList = Object.getOwnPropertyDescriptor(HTMLElement.prototype,'classList');
-  classList && Object.defineProperty(Element.prototype,'classList', classList);
+if (!Object.getOwnPropertyDescriptor(Element.prototype, 'classList') && HTMLElement) {
+  const classList = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'classList');
+  classList && Object.defineProperty(Element.prototype, 'classList', classList);
 }
 
 (() => {
   // В IE 11 fiter значение не применяется, но само свойство присуствует
-  const checkPropertyFilter = (() => {
-    const testImg = new Image()
+  const isSupport = (() => {
+    const testImg = new Image();
     testImg.style.filter = 'grayscale(100%)';
-    return !testImg.style.filter
+    return !testImg.style.filter;
   })();
 
   // Создаем фильтр
-  const createSVGFilterGrayScale = ({filterId, filterValue}) => {
+  const createSVGFilterGrayScale = ({ filterId, filterValue }) => {
     const namespaceURI = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(namespaceURI, 'svg');
 
@@ -65,15 +65,17 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLEleme
 
     const filter = defs.appendChild(document.createElementNS(namespaceURI, 'filter'));
     filter.setAttribute('id', filterId);
-    const feColorMatrix = filter.appendChild(document.createElementNS(namespaceURI, 'feColorMatrix'));
+    const feColorMatrix = filter.appendChild(
+      document.createElementNS(namespaceURI, 'feColorMatrix'),
+    );
     feColorMatrix.setAttribute('id', 'filter-grayscale-elem');
     feColorMatrix.setAttribute('type', 'saturate');
     feColorMatrix.setAttribute('values', `${1 - filterValue / 100}`);
 
     document.body.appendChild(svg);
-  }
+  };
 
-  const createSVGElem = ({id, cssText, classList, src, backgroundColor}) => {
+  const createSVGElem = ({ id, cssText, classList, src, backgroundColor }) => {
     const container = document.createElement('div');
     id && container.setAttribute('id', id);
     classList && container.classList.add(classList);
@@ -81,7 +83,6 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLEleme
     container.style.position === 'absolute' && (container.style.position = 'relative');
 
     const namespaceURI = 'http://www.w3.org/2000/svg';
-
 
     // Создаем SVG для фона c наложеным фильтром
     // потому что у IE11 и EDGE не
@@ -94,7 +95,9 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLEleme
     svgBackground.style.top = '0';
     svgBackground.style.left = '0';
 
-    const shapeBackground = svgBackground.appendChild(document.createElementNS(namespaceURI, 'rect'));
+    const shapeBackground = svgBackground.appendChild(
+      document.createElementNS(namespaceURI, 'rect'),
+    );
     shapeBackground.style.position = 'absolute';
     shapeBackground.setAttribute('x', '0');
     shapeBackground.setAttribute('y', '0');
@@ -104,7 +107,7 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLEleme
 
     // Создаем 2 картинки (обычная и с наложенным фильтром) для анимации фильтра
     // через opacity делаем отображение изображения
-    ['filter','real'].forEach( el => {
+    ['filter', 'real'].forEach(el => {
       const svg = container.appendChild(document.createElementNS(namespaceURI, 'svg'));
       svg.classList.add(`svg-${el}`);
       svg.setAttribute('width', '100%');
@@ -116,19 +119,19 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLEleme
       svg.style.zIndex = '9999';
 
       const image = svg.appendChild(document.createElementNS(namespaceURI, 'image'));
-      src && image.setAttributeNS('http://www.w3.org/1999/xlink','href', src);
+      src && image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', src);
       image.setAttribute('width', '100%');
       image.setAttribute('height', '100%');
-    })
+    });
 
     return container;
-  }
+  };
 
-  const checkFilterExists = ({filterId, filterValue}) => {
+  const checkFilterExists = ({ filterId, filterValue }) => {
     if (!document.getElementById(filterId)) {
-      createSVGFilterGrayScale({filterId, filterValue});
+      createSVGFilterGrayScale({ filterId, filterValue });
     }
-  }
+  };
 
   const replaceElem = el => {
     const id = el.getAttribute('id');
@@ -140,21 +143,19 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype,'classList') && HTMLEleme
     const filterValue = (el.dataset.filter.match(/grayscale\(\s*(\d+)%\s*\)/) || [])[1] || 0;
     const filterId = `filter-grayscale-${filterValue}`;
 
-    checkFilterExists({filterId, filterValue});
+    checkFilterExists({ filterId, filterValue });
 
-    const container = createSVGElem({id, cssText, classList, src, backgroundColor});
+    const container = createSVGElem({ id, cssText, classList, src, backgroundColor });
     el.parentNode.insertBefore(container, el);
     el.remove();
-  }
+  };
 
   const applyFilter = () => {
     const elements = document.querySelectorAll(`img[data-filter*='grayscale']`);
     if (elements) {
       elements.forEach(replaceElem);
     }
-  }
+  };
 
-  if (checkPropertyFilter) {
-    window.addEventListener('load', applyFilter);
-  }
+  if (isSupport) window.addEventListener('load', applyFilter);
 })();

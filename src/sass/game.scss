@@ -1,3 +1,9 @@
+/* Check IE10+ - Edge16+
+  IE10+ CSS - @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {}
+  IE Edge 12+ CSS - @supports (-ms-accelerator:true)  {}
+  IE Edge 16+ CSS - @supports (-ms-ime-align:auto) {}
+*/
+
 *,
 *::before,
 *::after {
@@ -13,10 +19,18 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background-color: #060AB2;
+  background-color: #0e23ff;
+  background-image: url('../img/bg.jpg');
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: cover;
+  background-origin: border-box;
+  background-clip: border-box;
+  background-attachment: fixed;
+  background-blend-mode: multiply;
  }
 
- .main {
+.main {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -25,8 +39,8 @@ body {
 .memory-game {
   padding: 5px;
   align-self: center; // for IE 11 для центрирования
-  flex-shrink: 0; // for IE 11 для бордера
   margin: auto;
+  flex-shrink: 0; // for IE 11 для бордера
 
   display: flex;
   flex-wrap: wrap;
@@ -37,6 +51,9 @@ body {
 }
 
 .memory-card {
+  border-radius: 5px;
+  overflow: hidden;
+
   width: calc(25% - 10px);
   margin: 5px;
   box-shadow: 1px 1px 1px rgba(0,0,0,.3);
@@ -79,10 +96,9 @@ body {
   width: 100%;
   height: 100%;
   padding: 15%;
-  border-radius: 5px;
+
   background-color: #1C7CCC;
-  transition: visibility 0s linear .25s;
-  overflow: hidden;
+  transition: visibility 0s linear .287s;
 }
 
 
@@ -143,6 +159,12 @@ body {
 // https://toster.ru/q/575749
 // for IE 11 не работает transform-style: preserve-3d;
 // а также неправильно работает в backface-visibility и transition
-.memory-card:not(.flip) .front-face, .memory-card.flip .back-face {
+.memory-card:not(.flip) .front-face,
+.memory-card.flip .back-face {
   visibility: hidden;
+}
+
+.memory-card.flip .front-face,
+.memory-card.flip .back-face {
+  transition: visibility 0s linear .213s;
 }
