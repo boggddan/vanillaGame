@@ -116,7 +116,6 @@ if (!Object.getOwnPropertyDescriptor(Element.prototype, 'classList') && HTMLElem
       svg.style.top = '0';
       svg.style.left = '0';
       svg.style.padding = 'inherit';
-      svg.style.zIndex = '9999';
 
       const image = svg.appendChild(document.createElementNS(namespaceURI, 'image'));
       src && image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', src);

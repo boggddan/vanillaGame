@@ -2,6 +2,7 @@
 // Полифил применяетс к тегам [data-background-blend-mode="multiply"]
 // Изображение и цвет берет с CSS свойств (background-image, background-color)
 // IE 11 работает огранниченное количество фильтров: normal, myltiply, lighten, screen, darken
+//   https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/mode
 //   https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/samples/jj206437(v=vs.85)
 
 // Нужно перекомилировать через Babel
@@ -76,6 +77,28 @@ if (window.NodeList && !NodeList.prototype.forEach) {
     return svg;
   };
 
+  const onResize = el => {
+    let running = false;
+    let windowHeight = 0;
+
+    const update = () => {
+      if (windowHeight !== window.innerHeight) {
+        windowHeight = window.innerHeight;
+        el.style.height = 'auto';
+        el.style.height = `${document.documentElement.scrollHeight}px`;
+      }
+      running = false;
+    }
+
+    const requestTick = () => {
+      if(!running) requestAnimationFrame(update);
+      running = true;
+    }
+
+    requestTick();
+    window.addEventListener('resize', requestTick);
+  }
+
   const applyFilter = () => {
     const elements = document.querySelectorAll(`[data-background-blend-mode]`);
 
@@ -99,31 +122,11 @@ if (window.NodeList && !NodeList.prototype.forEach) {
           // Если фон для Body, нужно по вешать обработчик события на измнения размеров окна
           // потому что размер body может быть меньша размера документа, когда часть контента
           // выпадает
-          if (el.tagName.toLowerCase() === 'body') {
-	          let running = false;
-            let windowHeight = 0;
-
-            const update = () => {
-              if (windowHeight !== window.innerHeight) {
-                windowHeight = window.innerHeight;
-                svg.style.height = 'auto';
-                svg.style.height = `${document.documentElement.scrollHeight}px`;
-              }
-              running = false;
-            }
-
-            const requestTick = () => {
-              if(!running) requestAnimationFrame(update);
-              running = true;
-            }
-
-            window.addEventListener('resize', requestTick);
-          }
+          if (el.tagName.toLowerCase() === 'body') onResize(svg)
         }
       });
     }
   };
 
-  // if (isNotSupport)
-  window.addEventListener('load', applyFilter);
+  if (isNotSupport) window.addEventListener('load', applyFilter);
 })();

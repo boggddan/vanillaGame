@@ -4,6 +4,13 @@
   IE Edge 16+ CSS - @supports (-ms-ime-align:auto) {}
 */
 
+.con {
+  display: flex;
+  margin: 20px;
+
+
+}
+
 *,
 *::before,
 *::after {
@@ -47,8 +54,12 @@ body {
   flex-wrap: wrap;
   max-width: 640px;
   width: 100%;
-  border: 1px dotted white;
   perspective: 1000px;
+
+  border: 2px dashed #86CB92;
+  border-image-source: radial-gradient(farthest-corner at center, transparent 0%, transparent 70%, #86CB92 100%);
+  border-image-slice: 2;
+  border-image-width: 2px;
 }
 
 .memory-card {
@@ -101,7 +112,6 @@ body {
   background-color: #1C7CCC;
   transition: visibility 0s linear .287s;
 }
-
 
 ////////////////////////////////////////////
   // for IE11 не работае filter: grayscale и
