@@ -91,7 +91,7 @@ export const bJs = ( ) => src( paths.js.src )
     ) )
   .pipe( plugins( ).sourcemaps.init( ) )
   .pipe( plugins( ).babel( {
-    presets: ['env']
+    presets: ['@babel/preset-env']
   } ) )
   .pipe(  plugins( ).sourcemaps.write('.') )
   .pipe( dest( paths.js.dest ) )
