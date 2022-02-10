@@ -24,7 +24,7 @@
     "gulp-postcss": "^8.0.0",
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.4",
-    "node-sass": "^4.10.0",
+    "node-sass": "^7.0.0",
     "stylelint": "^9.8.0",
     "stylelint-config-recommended": "^2.1.0"
   },
