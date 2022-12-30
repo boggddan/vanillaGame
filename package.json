@@ -29,7 +29,7 @@
     "stylelint-config-recommended": "^2.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.5",
+    "@babel/core": "^7.20.7",
     "@babel/preset-env": "^7.1.5",
     "@babel/register": "^7.0.0",
     "eslint": "^5.9.0",
